@@ -1,0 +1,41 @@
+{
+  "name": "inventory-app-expressjs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node --watch app.js",
+    "populatedb": "node db/populatedb.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/heydarov93/Inventory-App-ExpressJS.git"
+  },
+  "keywords": [
+    "nodejs",
+    "node",
+    "express",
+    "expressjs",
+    "pg",
+    "postgresql",
+    "express-validator",
+    "javascript",
+    "backend",
+    "server",
+    "the-odin-project"
+  ],
+  "author": "Yashar Heydarov",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/heydarov93/Inventory-App-ExpressJS/issues"
+  },
+  "homepage": "https://github.com/heydarov93/Inventory-App-ExpressJS#readme",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-async-handler": "^1.2.0",
+    "express-validator": "^7.2.1",
+    "pg": "^8.14.1"
+  }
+}
