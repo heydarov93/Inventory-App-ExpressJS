@@ -1,4 +1,5 @@
 const { Router } = require("express");
+const categoryController = require("../controllers/categoryController");
 
 const router = Router();
 
@@ -6,17 +7,13 @@ const router = Router();
 router.get("/", (req, res) => res.redirect("/"));
 
 // Display form to add a new category
-router.get("/new", (req, res) => res.send("Add a New Category Form"));
+router.get("/new", categoryController.displayForm);
 
 // Display all items under a related category
-router.get("/:categoryId", (req, res) =>
-  res.send("All items under Category id: " + req.params.categoryId)
-);
+router.get("/:categoryId", categoryController.getItemsByCategory);
 
 // Display form to update a category
-router.get("/:categoryId/new", (req, res) =>
-  res.send("Form to Update an category")
-);
+router.get("/:categoryId/edit", categoryController.displayForm);
 
 // Create a new category
 router.post("/new", (req, res) => res.send("New category created: 201"));
