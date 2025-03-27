@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title %></title>
+  </head>
+  <body>
+    <h1><%= heading_1 %></h1>
+    <!-- If form for items so display item form -->
+    <% if (isItemForm) { %> Show form to submit/update a new item
+
+    <!-- If form for categories so display category form -->
+    <% } else { %> <%- include("partials/category-form", {category}) %> <% } %>
+  </body>
+</html>
