@@ -1,4 +1,5 @@
 const { Router } = require("express");
+const itemController = require("../controllers/itemController");
 
 const router = Router();
 
@@ -9,7 +10,7 @@ router.get("/", (req, res) => res.redirect("/"));
 router.get("/new", (req, res) => res.send("Add a New Item Form"));
 
 // Display item details
-router.get("/:itemId", (req, res) => res.send("Item id: " + req.params.itemId));
+router.get("/:itemId", itemController.getItemById);
 
 // Display form to update an item
 router.get("/:itemId/new", (req, res) => res.send("Form to Update an item"));
