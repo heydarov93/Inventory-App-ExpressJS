@@ -1,0 +1,34 @@
+<!-- Set default action for form -->
+<% let action = "new" %>
+
+<!-- If category exists so it is the update form; Modify action to send put request -->
+<% if (category) { action = `${category.category_id}?_method=PUT`; } %>
+
+<form action="/categories/<%= action %>" method="POST">
+  <div>
+    <label for="category_name">Category Name</label>
+    <div>
+      <input
+        type="text"
+        id="category_name"
+        name="category_name"
+        placeholder="e.g. Electronics"
+      />
+    </div>
+  </div>
+  <div>
+    <label for="secret_key">Secret key</label>
+    <div>
+      <input
+        type="password"
+        id="secret_key"
+        name="secret_key"
+        placeholder="Enter a secret key (You can modify a category using this key)"
+      />
+    </div>
+  </div>
+
+  <div>
+    <button type="submit">Submit</button>
+  </div>
+</form>
