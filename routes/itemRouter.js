@@ -7,13 +7,13 @@ const router = Router();
 router.get("/", (req, res) => res.redirect("/"));
 
 // Display form to add a new item
-router.get("/new", (req, res) => res.send("Add a New Item Form"));
+router.get("/new", itemController.displayForm);
 
 // Display item details
 router.get("/:itemId", itemController.getItemById);
 
 // Display form to update an item
-router.get("/:itemId/new", (req, res) => res.send("Form to Update an item"));
+router.get("/:itemId/edit", itemController.displayForm);
 
 // Create a new item
 router.post("/new", (req, res) => res.send("New item created: 201"));
