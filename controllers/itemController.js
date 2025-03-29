@@ -18,4 +18,22 @@ const getItemById = asyncHandler(async (req, res) => {
   });
 });
 
-module.exports = { getItemById };
+const displayForm = asyncHandler(async (req, res) => {
+  const { itemId } = req.params;
+  const options = {
+    isItemForm: true,
+    item: null,
+    title: "Add new item",
+    heading_1: "Add new item",
+  };
+
+  if (itemId) {
+    options.title = "Update category " + itemId;
+    options.heading_1 = "Update category " + itemId;
+    options.item = { item_id: itemId };
+  }
+
+  res.render("form", options);
+});
+
+module.exports = { getItemById, displayForm };
