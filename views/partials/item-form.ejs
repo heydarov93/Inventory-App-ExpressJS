@@ -1,0 +1,92 @@
+<!-- Set default action for form -->
+<% let action = "new" %>
+
+<!-- If item exists so it is the update form; Modify action to send put request -->
+<% if (item) { action = `${item.item_id}?_method=PUT`; } %>
+
+<form action="/items/<%= action %>" method="POST">
+  <div>
+    <label for="item_name">Item Name</label>
+    <div>
+      <input
+        type="text"
+        id="item_name"
+        name="item_name"
+        placeholder="e.g. Smartphone"
+      />
+    </div>
+  </div>
+
+  <div>
+    <label for="item_category">Category</label>
+    <div>
+      <input
+        type="text"
+        id="item_category"
+        name="item_category[]"
+        placeholder="e.g. Smartphone"
+      />
+    </div>
+  </div>
+
+  <div>
+    <label for="username">Username</label>
+    <div>
+      <input
+        type="text"
+        id="username"
+        name="username"
+        placeholder="e.g. green_apple"
+      />
+    </div>
+  </div>
+
+  <div>
+    <label for="contact">Contact</label>
+    <div>
+      <input
+        type="text"
+        id="contact"
+        name="contact"
+        placeholder="e.g. +994555000000"
+      />
+    </div>
+  </div>
+
+  <div>
+    <label for="status">Status</label>
+    <div>
+      <select name="status" id="status">
+        <option value="0">Lost</option>
+        <option value="1">Found</option>
+      </select>
+    </div>
+  </div>
+
+  <div>
+    <label for="details">Details</label>
+    <div>
+      <textarea
+        name="details"
+        id="details"
+        placeholder="e.g. I found this item at the bus station."
+      ></textarea>
+    </div>
+  </div>
+
+  <div>
+    <label for="secret_key">Secret key</label>
+    <div>
+      <input
+        type="password"
+        id="secret_key"
+        name="secret_key"
+        placeholder="Enter a secret key (You can modify a item using this key)"
+      />
+    </div>
+  </div>
+
+  <div>
+    <button type="submit">Submit</button>
+  </div>
+</form>
