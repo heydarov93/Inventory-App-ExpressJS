@@ -25,12 +25,18 @@ const displayForm = asyncHandler(async (req, res) => {
     item: null,
     title: "Add new item",
     heading_1: "Add new item",
+    categories: await db.getCategories(),
   };
 
   if (itemId) {
-    options.title = "Update category " + itemId;
-    options.heading_1 = "Update category " + itemId;
-    options.item = { item_id: itemId };
+    const item = await db.getItemById(itemId);
+
+    // If item is falsy value or if it is an empty array throw not found error
+    if (!item || !item.length) throw new CustomNotFoundError("Item not found.");
+
+    options.title = "Update item #" + itemId;
+    options.heading_1 = "Update item #" + itemId;
+    options.item = item[0];
   }
 
   res.render("form", options);
