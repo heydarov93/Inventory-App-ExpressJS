@@ -8,48 +8,30 @@
   <div>
     <label for="item_name">Item Name</label>
     <div>
-      <input
-        type="text"
-        id="item_name"
-        name="item_name"
-        placeholder="e.g. Smartphone"
-      />
+      <input type="text" id="item_name" name="item_name" placeholder="e.g. Smartphone" value="<%= item?.item_name %>" />
     </div>
   </div>
 
   <div>
-    <label for="item_category">Category</label>
+    <label for="item_category">Category </label>
     <div>
-      <input
-        type="text"
-        id="item_category"
-        name="item_category[]"
-        placeholder="e.g. Smartphone"
-      />
+      <%- include("category-multiselect", {categories, item: item}) %>
     </div>
+
+    <%- include("category-tags", {categories: item?.categories}) %>
   </div>
 
   <div>
     <label for="username">Username</label>
     <div>
-      <input
-        type="text"
-        id="username"
-        name="username"
-        placeholder="e.g. green_apple"
-      />
+      <input type="text" id="username" name="username" placeholder="e.g. green_apple" value="<%= item?.username %>" />
     </div>
   </div>
 
   <div>
     <label for="contact">Contact</label>
     <div>
-      <input
-        type="text"
-        id="contact"
-        name="contact"
-        placeholder="e.g. +994555000000"
-      />
+      <input type="text" id="contact" name="contact" placeholder="e.g. +994555000000" value="<%= item?.contact %>" />
     </div>
   </div>
 
@@ -57,8 +39,13 @@
     <label for="status">Status</label>
     <div>
       <select name="status" id="status">
+        <% if (item?.status) { %>
+        <option value="1">Found</option>
+        <option value="0">Lost</option>
+        <% } else { %>
         <option value="0">Lost</option>
         <option value="1">Found</option>
+        <% } %>
       </select>
     </div>
   </div>
@@ -66,23 +53,15 @@
   <div>
     <label for="details">Details</label>
     <div>
-      <textarea
-        name="details"
-        id="details"
-        placeholder="e.g. I found this item at the bus station."
-      ></textarea>
+      <textarea name="details" id="details" placeholder="e.g. I found this item at the bus station.">
+<%= item?.details %></textarea>
     </div>
   </div>
 
   <div>
     <label for="secret_key">Secret key</label>
     <div>
-      <input
-        type="password"
-        id="secret_key"
-        name="secret_key"
-        placeholder="Enter a secret key (You can modify a item using this key)"
-      />
+      <input type="password" id="secret_key" name="secret_key" placeholder="Enter a secret key (You can modify a item using this key)" />
     </div>
   </div>
 
