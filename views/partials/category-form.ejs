@@ -8,23 +8,13 @@
   <div>
     <label for="category_name">Category Name</label>
     <div>
-      <input
-        type="text"
-        id="category_name"
-        name="category_name"
-        placeholder="e.g. Electronics"
-      />
+      <input type="text" id="category_name" name="category_name" placeholder="e.g. Electronics" value="<%= category?.category_name %>" />
     </div>
   </div>
   <div>
     <label for="secret_key">Secret key</label>
     <div>
-      <input
-        type="password"
-        id="secret_key"
-        name="secret_key"
-        placeholder="Enter a secret key (You can modify a category using this key)"
-      />
+      <input type="password" id="secret_key" name="secret_key" placeholder="Enter a secret key (You can modify a category using this key)" />
     </div>
   </div>
 
