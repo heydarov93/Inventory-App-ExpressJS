@@ -12,6 +12,15 @@ async function getCategories() {
   return rows;
 }
 
+// Get category by id from db
+async function getCategoryById(categoryId) {
+  const { rows } = await pool.query(
+    "SELECT * FROM categories WHERE category_id = $1",
+    [categoryId]
+  );
+  return rows;
+}
+
 // Get items by their category from db
 async function getItemsByCategory(categoryId) {
   const { rows } = await pool.query(
@@ -27,6 +36,21 @@ async function getItemsByCategory(categoryId) {
   return rows;
 }
 
+// Get categories by item from db
+async function getCategoriesByItem(itemId) {
+  const { rows } = await pool.query(
+    `SELECT c.category_id, c.category_name
+        FROM categories c
+        JOIN item_categories
+            ON item_categories.category_id = c.category_id
+        JOIN items
+            ON items.item_id = item_categories.item_id
+    WHERE items.item_id = $1`,
+    [itemId]
+  );
+  return rows;
+}
+
 // Get items by their id from db
 async function getItemById(itemId) {
   const { rows } = await pool.query(
@@ -35,6 +59,10 @@ async function getItemById(itemId) {
     WHERE item_id = $1`,
     [itemId]
   );
+
+  const categories = await getCategoriesByItem(itemId);
+  rows[0].categories = categories;
+
   return rows;
 }
 
@@ -43,4 +71,6 @@ module.exports = {
   getCategories,
   getItemsByCategory,
   getItemById,
+  getCategoryById,
+  getCategoriesByItem,
 };
