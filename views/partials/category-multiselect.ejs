@@ -1,0 +1,17 @@
+<div>
+  <select id="item_category" name="item_category[]" multiple style="width: 200px; height: 100px;">
+    <% categories.forEach(category => { %>
+
+    <!-- Check if category is selected or not -->
+    <% const isSelected = item?.categories?.some(c => c.category_id ===
+    category.category_id) %>
+    <option value="<%= category.category_id %>" <%= isSelected ? 'selected' : '' %>>
+      <%= category.category_name %>
+    </option>
+    <% }) %>
+    <!-- Close forEach -->
+  </select>
+  <p>
+    Hold down the Ctrl (windows) Command (Mac) button to select multiple options.
+  </p>
+</div>
