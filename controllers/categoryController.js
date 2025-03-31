@@ -27,10 +27,17 @@ const displayForm = asyncHandler(async (req, res) => {
     heading_1: "Add new category",
   };
 
+  // If category id exists display update form with category data
   if (categoryId) {
-    options.title = "Update category " + categoryId;
-    options.heading_1 = "Update category " + categoryId;
-    options.category = { category_id: categoryId };
+    const category = await db.getCategoryById(categoryId);
+
+    // If category is falsy value or if it is an empty array throw not found error
+    if (!category || !category.length)
+      throw new CustomNotFoundError("Category not found.");
+
+    options.title = "Update category #" + categoryId;
+    options.heading_1 = "Update category #" + categoryId;
+    options.category = category[0];
   }
 
   res.render("form", options);
