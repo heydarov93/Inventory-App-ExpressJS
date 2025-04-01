@@ -16,12 +16,10 @@ router.get("/:categoryId", categoryController.getItemsByCategory);
 router.get("/:categoryId/edit", categoryController.displayForm);
 
 // Create a new category
-router.post("/new", (req, res) => res.send("New category created: 201"));
+router.post("/new", categoryController.insertCategory);
 
 // Update an category
-router.put("/:categoryId", (req, res) =>
-  res.send("Category Updated: " + req.params.categoryId)
-);
+router.put("/:categoryId", categoryController.updateCategory);
 
 // Delete an category
 router.delete("/:categoryId", (req, res) =>
