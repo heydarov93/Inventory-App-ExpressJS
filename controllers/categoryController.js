@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const db = require("../db/queries");
 const CustomNotFoundError = require("../error/CustomNotFoundError");
 
+// Get all items of a category and render them
 const getItemsByCategory = asyncHandler(async (req, res) => {
   const { categoryId } = req.params;
 
@@ -18,6 +19,7 @@ const getItemsByCategory = asyncHandler(async (req, res) => {
   });
 });
 
+// Display form to inserr/update a category
 const displayForm = asyncHandler(async (req, res) => {
   const { categoryId } = req.params;
   const options = {
@@ -43,7 +45,33 @@ const displayForm = asyncHandler(async (req, res) => {
   res.render("form", options);
 });
 
+// Insert a new category
+const insertCategory = asyncHandler(async (req, res) => {
+  const { category_name, confirm_secret_key } = req.body;
+
+  await db.insertCategory({ category_name, secret_key: confirm_secret_key });
+
+  res.redirect("/");
+});
+
+// Update a category
+const updateCategory = asyncHandler(async (req, res) => {
+  const { category_id, category_name, secret_key, confirm_secret_key } =
+    req.body;
+
+  await db.updateCategory({
+    category_id,
+    category_name,
+    secret_key: secret_key || confirm_secret_key, // if user doesn't change secret key so it should stay same as previous one
+    confirm_secret_key,
+  });
+
+  res.redirect(`/categories/${category_id}/edit`);
+});
+
 module.exports = {
   getItemsByCategory,
   displayForm,
+  insertCategory,
+  updateCategory,
 };
