@@ -14,6 +14,8 @@ app.set("view engine", "ejs");
 // Enable _method override (must come before routes)
 app.use(methodOverride("_method"));
 
+app.use(express.urlencoded({ extended: true }));
+
 // Register routers
 app.use("/", indexRouter);
 app.use("/categories", categoryRouter);
