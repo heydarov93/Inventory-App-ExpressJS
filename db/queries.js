@@ -66,6 +66,31 @@ async function getItemById(itemId) {
   return rows;
 }
 
+// Insert a category
+async function insertCategory(categoryData) {
+  const { category_name, secret_key } = categoryData;
+
+  await pool.query(
+    "INSERT INTO categories (category_name, secret_key) VALUES ($1, $2)",
+    [category_name, secret_key]
+  );
+}
+// Update a category
+async function updateCategory(categoryData) {
+  const { category_id, category_name, secret_key, confirm_secret_key } =
+    categoryData;
+
+  await pool.query(
+    "UPDATE categories SET category_name = $1, secret_key = $2 WHERE category_id = $3 AND secret_key = $4",
+    [
+      category_name,
+      secret_key || confirm_secret_key, // if user doesn't change secret key so it should stay same as previous one
+      category_id,
+      confirm_secret_key,
+    ]
+  );
+}
+
 module.exports = {
   getItems,
   getCategories,
@@ -73,4 +98,6 @@ module.exports = {
   getItemById,
   getCategoryById,
   getCategoriesByItem,
+  insertCategory,
+  updateCategory,
 };
