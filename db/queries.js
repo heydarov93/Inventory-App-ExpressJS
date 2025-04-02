@@ -75,6 +75,7 @@ async function insertCategory(categoryData) {
     [category_name, secret_key]
   );
 }
+
 // Update a category
 async function updateCategory(categoryData) {
   const { category_id, category_name, secret_key, confirm_secret_key } =
@@ -91,6 +92,95 @@ async function updateCategory(categoryData) {
   );
 }
 
+// Insert an item
+async function insertItem(itemData) {
+  const {
+    item_name,
+    item_category,
+    username,
+    contact,
+    status,
+    details,
+    confirm_secret_key,
+  } = itemData;
+
+  await pool.query(
+    `WITH inserted_item AS (
+      INSERT INTO items (
+        item_name,
+        username,
+        contact,
+        status,
+        details,
+        secret_key
+      )
+      VALUES ($1, $2, $3, $4, $5, $6)
+      RETURNING item_id
+    )
+    INSERT INTO item_categories (item_id, category_id)
+    SELECT inserted_item.item_id, UNNEST($7::int[])
+    FROM inserted_item`,
+    [
+      item_name,
+      username,
+      contact,
+      status,
+      details,
+      confirm_secret_key,
+      item_category,
+    ]
+  );
+}
+
+// Update an item
+async function updateItem(itemData) {
+  const {
+    item_id,
+    item_name,
+    item_category,
+    username,
+    contact,
+    status,
+    details,
+    secret_key,
+    confirm_secret_key,
+  } = itemData;
+
+  await pool.query(
+    `WITH updated_item AS (
+      UPDATE items SET
+        item_name = $1,
+        username = $2,
+        contact = $3,
+        status = $4,
+        details = $5,
+        secret_key = $6
+      WHERE item_id = $7 AND secret_key = $8
+      RETURNING item_id
+    ),
+    deleted_categories AS (
+      DELETE FROM item_categories
+      WHERE item_id = $7
+      AND category_id NOT IN (SELECT UNNEST($9::int[]))
+      )
+    INSERT INTO item_categories (item_id, category_id)
+    SELECT updated_item.item_id, UNNEST($9::int[])
+    FROM updated_item
+    ON CONFLICT (item_id, category_id) DO NOTHING`,
+    [
+      item_name,
+      username,
+      contact,
+      status,
+      details,
+      secret_key || confirm_secret_key, // if user doesn't change secret key so it should stay same as previous one
+      item_id,
+      confirm_secret_key,
+      item_category,
+    ]
+  );
+}
+
 module.exports = {
   getItems,
   getCategories,
@@ -100,4 +190,6 @@ module.exports = {
   getCategoriesByItem,
   insertCategory,
   updateCategory,
+  insertItem,
+  updateItem,
 };

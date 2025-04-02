@@ -16,12 +16,10 @@ router.get("/:itemId", itemController.getItemById);
 router.get("/:itemId/edit", itemController.displayForm);
 
 // Create a new item
-router.post("/new", (req, res) => res.send("New item created: 201"));
+router.post("/new", itemController.insertItem);
 
 // Update an item
-router.put("/:itemId", (req, res) =>
-  res.send("Item Updated: " + req.params.itemId)
-);
+router.put("/:itemId", itemController.updateItem);
 
 // Delete an item
 router.delete("/:itemId", (req, res) =>

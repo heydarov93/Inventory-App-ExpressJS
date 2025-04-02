@@ -42,4 +42,21 @@ const displayForm = asyncHandler(async (req, res) => {
   res.render("form", options);
 });
 
-module.exports = { getItemById, displayForm };
+// Insert a new item
+const insertItem = asyncHandler(async (req, res) => {
+  await db.insertItem(req.body);
+
+  res.redirect("/");
+});
+
+// Update an item
+const updateItem = asyncHandler(async (req, res) => {
+  // If secret key is empty (not edited) keep it same as previous
+  req.body.secret_key = req.body.secret_key || req.bodyconfirm_secret_key;
+
+  await db.updateItem(req.body);
+
+  res.redirect("/items/" + req.body.item_id);
+});
+
+module.exports = { getItemById, displayForm, insertItem, updateItem };
