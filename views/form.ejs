@@ -10,10 +10,10 @@
 <body>
   <h1><%= heading_1 %></h1>
   <!-- If form is for items so display item form -->
-  <% if (isItemForm) { %> <%- include("partials/item-form", {item}) %>
+  <% if (isItemForm) { %> <%- include("partials/item-form", { item }) %>
 
   <!-- If form is for categories so display category form -->
-  <% } else { %> <%- include("partials/category-form", {category}) %> <% } %>
+  <% } else { %> <%- include("partials/category-form", { category }) %> <% } %>
 </body>
 
 </html>
