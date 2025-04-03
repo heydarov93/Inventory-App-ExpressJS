@@ -19,6 +19,7 @@
     <div>
       <input type="text" id="item_name" name="item_name" placeholder="e.g. Smartphone" value="<%= item?.item_name %>" />
     </div>
+    <%- include("input-error", {input_name: "item_name"}) %>
   </div>
 
   <div>
@@ -26,6 +27,7 @@
     <div>
       <%- include("category-multiselect", {categories, item: item}) %>
     </div>
+    <%- include("input-error", {input_name: "item_category"}) %>
   </div>
 
   <div>
@@ -33,6 +35,7 @@
     <div>
       <input type="text" id="username" name="username" placeholder="e.g. green_apple" value="<%= item?.username %>" />
     </div>
+    <%- include("input-error", {input_name: "username"}) %>
   </div>
 
   <div>
@@ -40,6 +43,7 @@
     <div>
       <input type="text" id="contact" name="contact" placeholder="e.g. +994555000000" value="<%= item?.contact %>" />
     </div>
+    <%- include("input-error", {input_name: "contact"}) %>
   </div>
 
   <div>
@@ -50,6 +54,7 @@
         <option <%= item?.status === 0 ?  'selected' : '' %> value="0">Lost</option>
       </select>
     </div>
+    <%- include("input-error", {input_name: "status"}) %>
   </div>
 
   <div>
@@ -58,6 +63,7 @@
       <textarea name="details" id="details" placeholder="e.g. I found this item at the bus station.">
 <%= item?.details %></textarea>
     </div>
+    <%- include("input-error", {input_name: "details"}) %>
   </div>
 
   <% if (item)  { %>
@@ -66,6 +72,7 @@
     <div>
       <input type="password" id="secret_key" name="secret_key" placeholder="New secret key (You can modify an item using this key)" />
     </div>
+    <%- include("input-error", {input_name: "secret_key"}) %>
   </div>
   <% } %>
 
@@ -74,6 +81,7 @@
     <div>
       <input type="password" id="confirm_secret_key" name="confirm_secret_key" placeholder="Enter your secret key to confirm changes" />
     </div>
+    <%- include("input-error", {input_name: "confirm_secret_key"}) %>
   </div>
 
   <div>

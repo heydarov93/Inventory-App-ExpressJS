@@ -19,13 +19,7 @@
     <div>
       <input type="text" id="category_name" name="category_name" placeholder="e.g. Electronics" value="<%= category?.category_name %>" />
     </div>
-    <span>
-      <% locals.errors?.forEach(err => {
-      if (err.path === 'category_name') { %>
-      <%= err.msg %><br>
-      <% }
-    }) %>
-    </span>
+    <%- include("input-error", {input_name: "category_name"}) %>
   </div>
 
   <% if (category) {  %>
@@ -34,13 +28,7 @@
     <div>
       <input type="password" id="secret_key" name="secret_key" placeholder="Enter a secret key (You can modify a category using this key)" />
     </div>
-    <span>
-      <% locals.errors?.forEach(err => {
-      if (err.path === 'secret_key') { %>
-      <%= err.msg %><br>
-      <% }
-    }) %>
-    </span>
+    <%- include("input-error", {input_name: "secret_key"}) %>
   </div>
   <%  } %>
 
@@ -49,13 +37,7 @@
     <div>
       <input type="password" id="confirm_secret_key" name="confirm_secret_key" placeholder="Enter your secret key to confirm changes" />
     </div>
-    <span>
-      <% locals.errors?.forEach(err => {
-      if (err.path === 'confirm_secret_key') { %>
-      <%= err.msg %><br>
-      <% }
-    }) %>
-    </span>
+    <%- include("input-error", {input_name: "confirm_secret_key"}) %>
   </div>
 
   <div>
