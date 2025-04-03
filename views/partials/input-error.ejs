@@ -1,0 +1,7 @@
+<span>
+  <% locals.errors?.forEach(err => {
+    if (err.path === input_name) { %>
+  <%= err.msg %><br>
+  <% }
+  }) %>
+</span>
