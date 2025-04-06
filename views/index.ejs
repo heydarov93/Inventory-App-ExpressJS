@@ -8,11 +8,19 @@
 </head>
 
 <body>
+  <%- include("partials/navbar") %>
+  <hr>
   <h1><%= heading_1 %></h1>
   <ul>
     <% categories.forEach((category) => { %>
     <li>
       <a href="/categories/<%= category.category_id %>"><%= category.category_name %></a>
+      <div>
+        <a href="/categories/<%= category.category_id %>/edit">edit</a>
+        <form action="/categories/<%= category.category_id %>/?_method=delete" method="post">
+          <button type="submit">delete</button>
+        </form>
+      </div>
     </li>
     <br />
     <br />
