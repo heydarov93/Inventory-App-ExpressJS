@@ -1,0 +1,12 @@
+<nav>
+  <ul>
+    <% [
+        {
+            menu: "Home",
+            link: "/"
+        }
+        ].forEach(({menu, link}) => { %>
+    <li><a href="<%=link%>"><%= menu %></a></li>
+    <% }) %>
+  </ul>
+</nav>
