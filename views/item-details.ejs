@@ -1,22 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><%= title %></title>
-  </head>
-  <body>
-    <h1><%= heading_1 %></h1>
-    <ul>
-      <% const status = item.status ? "Found" : "Lost" %>
-      <li>
-        Name: <%= item.item_name %><br />
-        Author: <%= item.username %><br />
-        Tel: <%= item.contact %><br />
-        Status: <%= status %><br />
-        Date: <%= item.added %><br />
-        Description: <%= item.details %><br />
-      </li>
-    </ul>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+</head>
+
+<body>
+  <%- include("partials/navbar") %>
+  <hr>
+  <h1><%= heading_1 %></h1>
+  <ul>
+    <% const status = item.status ? "Found" : "Lost" %>
+    <li>
+      Name: <%= item.item_name %><br />
+      Author: <%= item.username %><br />
+      Tel: <%= item.contact %><br />
+      Status: <%= status %><br />
+      Date: <%= item.added %><br />
+      Description: <%= item.details %><br />
+    </li>
+  </ul>
+</body>
+
 </html>
