@@ -1,7 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const db = require("../db/queries");
 const CustomNotFoundError = require("../error/CustomNotFoundError");
-const { body, validationResult } = require("express-validator");
+const { body, validationResult, param } = require("express-validator");
 
 const requiredMsg = "is required.";
 
@@ -66,45 +66,68 @@ const putFormValidation = [
     .withMessage("Secret key must have minimum 5 characters."),
 ];
 
-const getItemById = asyncHandler(async (req, res) => {
-  const { itemId } = req.params;
+// Validate item id
+const paramsValidation = [
+  param("itemId")
+    .custom(async (id, { req }) => {
+      const item = await db.getItemById(id);
 
-  const item = await db.getItemById(itemId);
+      if (!item || item.length === 0) throw new Error();
 
-  // If item is a falsy value or if it is an empty array throw not found error
-  if (!item || !item.length) throw new CustomNotFoundError("Item not found!");
+      // Pass item to controller via rqeuest object
+      req.item = item;
 
-  // First element of the item array is an item data
-  res.render("item-details", {
-    title: item[0].item_name,
-    heading_1: item[0].item_name,
-    item: item[0],
-  });
-});
+      return true;
+    })
+    .withMessage("Item not found."),
+];
 
-const displayForm = asyncHandler(async (req, res) => {
-  const { itemId } = req.params;
-  const options = {
-    isItemForm: true,
-    item: null,
-    title: "Add new item",
-    heading_1: "Add new item",
-    categories: await db.getCategories(),
-  };
+const getItemById = [
+  paramsValidation,
+  asyncHandler(async (req, res) => {
+    const errors = validationResult(req);
 
-  if (itemId) {
-    const item = await db.getItemById(itemId);
+    // If item id validation fails (there is no item for given id) throw not found error
+    if (!errors.isEmpty()) throw new CustomNotFoundError("Item not found!");
 
-    // If item is falsy value or if it is an empty array throw not found error
-    if (!item || !item.length) throw new CustomNotFoundError("Item not found.");
+    const { item } = req;
 
-    options.title = "Update item #" + itemId;
-    options.heading_1 = "Update item #" + itemId;
-    options.item = item[0];
-  }
+    // First element of the item array is an item data
+    res.render("item-details", {
+      title: item[0].item_name,
+      heading_1: item[0].item_name,
+      item: item[0],
+    });
+  }),
+];
 
-  res.render("form", options);
-});
+const displayForm = [
+  paramsValidation,
+  asyncHandler(async (req, res) => {
+    const { itemId } = req.params;
+    const options = {
+      isItemForm: true,
+      item: null,
+      title: "Add new item",
+      heading_1: "Add new item",
+      categories: await db.getCategories(),
+    };
+
+    if (itemId) {
+      const errors = validationResult(req);
+
+      // Throw error if item not found for a given id
+      if (!errors.isEmpty())
+        throw new CustomNotFoundError(errors.errors[0].msg);
+
+      options.title = "Update item #" + itemId;
+      options.heading_1 = "Update item #" + itemId;
+      options.item = req.item[0];
+    }
+
+    res.render("form", options);
+  }),
+];
 
 // Insert a new item
 const insertItem = [
@@ -143,7 +166,6 @@ const updateItem = [
 
     // If there is any error
     if (!errors.isEmpty()) {
-      console.log(errors.errors);
       const options = {
         isItemForm: true,
         item: req.body,
