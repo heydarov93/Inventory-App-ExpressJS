@@ -35,7 +35,7 @@ const paramsValidation = [
       if (!category || category.length === 0) throw new Error();
 
       if (
-        req.originalUrl.match(/^\/categories\/[^/]+\/edit$/) &&
+        req.originalUrl.match(/^\/categories\/[^/]+\/(edit|delete)$/) &&
         req.method === "GET"
       )
         req.category = category;
@@ -43,6 +43,27 @@ const paramsValidation = [
       return true;
     })
     .withMessage("Category not found."),
+];
+
+const deleteCategoryValidation = [
+  param("categoryId")
+    .custom(async (id, { req }) => {
+      const category = await db.getCategoryById(id);
+
+      if (!category || category.length === 0) throw new Error();
+
+      req.category = category;
+
+      return true;
+    })
+    .withMessage("Category not found."),
+  body("secret_key")
+    .custom(async (secret_key, { req }) => {
+      if (req.category[0].secret_key !== secret_key) throw new Error();
+
+      return true;
+    })
+    .withMessage("Invalid secret key."),
 ];
 
 // Get all items of a category and render them
@@ -168,9 +189,56 @@ const updateCategory = [
   }),
 ];
 
+const displayDeleteForm = [
+  paramsValidation,
+  asyncHandler(async (req, res) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      throw new CustomNotFoundError(errors.errors[0].msg);
+    }
+
+    res.render("delete-form", { category: req.category[0] });
+  }),
+];
+
+const deleteCategory = [
+  deleteCategoryValidation,
+  asyncHandler(async (req, res) => {
+    const { categoryId } = req.params;
+
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      // render form with error message (400 bad request)
+      res.status(403).render("delete-form", {
+        category: req.category[0],
+        errors: errors.errors,
+      });
+      return;
+    }
+
+    const { rows } = await db.categoryHasItems(categoryId);
+    const hasItems = rows[0].exists;
+
+    // If category has items don't allow to delete it
+    if (hasItems) {
+      return res.status(409).render("error", {
+        message: "Category has associated items. Remove them first.",
+        statusCode: 409,
+      });
+    }
+
+    await db.deleteCategory(categoryId, req.category[0].secret_key);
+    res.redirect("/");
+  }),
+];
+
 module.exports = {
   getItemsByCategory,
   displayForm,
   insertCategory,
   updateCategory,
+  displayDeleteForm,
+  deleteCategory,
 };
