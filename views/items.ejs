@@ -22,6 +22,10 @@
       Date: <%= item.added %><br />
       Description: <%= item.details %><br />
       <a href="/items/<%= item.item_id %>">Open</a>
+      <div>
+        <a href="/items/<%= item.item_id %>/edit">edit</a>
+        <a href="/items/<%= item.item_id %>/delete">delete</a>
+      </div>
       <br />
       <br />
     </li>
