@@ -11,17 +11,23 @@
   <%- include("partials/navbar") %>
   <hr>
   <h1><%= heading_1 %></h1>
-  <ul>
+  <div>
     <% const status = item.status ? "Found" : "Lost" %>
-    <li>
-      Name: <%= item.item_name %><br />
-      Author: <%= item.username %><br />
-      Tel: <%= item.contact %><br />
-      Status: <%= status %><br />
-      Date: <%= item.added %><br />
-      Description: <%= item.details %><br />
-    </li>
-  </ul>
+    <div>
+      <strong>Name:</strong> <%= item.item_name %><br />
+      <strong>Author:</strong> <%= item.username %><br />
+      <strong>Tel:</strong> <%= item.contact %><br />
+      <strong>Status:</strong> <%= status %><br />
+      <strong>Date:</strong> <%= item.added %><br />
+      <strong>Description:</strong> <%= item.details %><br />
+    </div>
+    <div>
+      <strong>Categories:</strong>
+      <% item.categories.forEach(({category_name, category_id}, index) => { %>
+      <em><a href="/categories/<%= category_id %>"><%= category_name %> <%= index === item.categories.length - 1 ? '' : ',' %></a> &nbsp;</em>
+      <% }); %>
+    </div>
+  </div>
 </body>
 
 </html>
