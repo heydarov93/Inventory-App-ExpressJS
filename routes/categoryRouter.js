@@ -15,15 +15,16 @@ router.get("/:categoryId", categoryController.getItemsByCategory);
 // Display form to update a category
 router.get("/:categoryId/edit", categoryController.displayForm);
 
+// Display form to delete a category
+router.get("/:categoryId/delete", categoryController.displayDeleteForm);
+
 // Create a new category
 router.post("/new", categoryController.insertCategory);
 
-// Update an category
-router.put("/:categoryId", categoryController.updateCategory);
+// Update a category
+router.post("/:categoryId/update", categoryController.updateCategory);
 
-// Delete an category
-router.delete("/:categoryId", (req, res) =>
-  res.send("Category Deleted: " + req.params.categoryId)
-);
+// Delete a category
+router.post("/:categoryId/delete", categoryController.deleteCategory);
 
 module.exports = router;
