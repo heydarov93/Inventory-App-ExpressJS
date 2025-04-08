@@ -15,15 +15,16 @@ router.get("/:itemId", itemController.getItemById);
 // Display form to update an item
 router.get("/:itemId/edit", itemController.displayForm);
 
+// Display form to delete an item
+router.get("/:itemId/delete", itemController.displayDeleteForm);
+
 // Create a new item
 router.post("/new", itemController.insertItem);
 
 // Update an item
-router.put("/:itemId", itemController.updateItem);
+router.post("/:itemId/update", itemController.updateItem);
 
 // Delete an item
-router.delete("/:itemId", (req, res) =>
-  res.send("Item Deleted: " + req.params.itemId)
-);
+router.post("/:itemId/delete", itemController.deleteCategory);
 
 module.exports = router;
