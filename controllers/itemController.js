@@ -82,6 +82,17 @@ const paramsValidation = [
     .withMessage("Item not found."),
 ];
 
+const deleteItemValidation = [
+  ...paramsValidation,
+  body("secret_key")
+    .custom(async (secret_key, { req }) => {
+      if (req.item[0].secret_key !== secret_key) throw new Error();
+
+      return true;
+    })
+    .withMessage("Invalid secret key."),
+];
+
 const getItemById = [
   paramsValidation,
   asyncHandler(async (req, res) => {
@@ -189,4 +200,45 @@ const updateItem = [
   }),
 ];
 
-module.exports = { getItemById, displayForm, insertItem, updateItem };
+const displayDeleteForm = [
+  paramsValidation,
+  asyncHandler(async (req, res) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      throw new CustomNotFoundError(errors.errors[0].msg);
+    }
+
+    res.render("delete-form", { item: req.item[0] });
+  }),
+];
+
+const deleteCategory = [
+  deleteItemValidation,
+  asyncHandler(async (req, res) => {
+    const { itemId } = req.params;
+
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      // render form with error message (400 bad request)
+      res.status(403).render("delete-form", {
+        item: req.item[0],
+        errors: errors.errors,
+      });
+      return;
+    }
+
+    await db.deleteItem(itemId, req.item[0].secret_key);
+    res.redirect("/");
+  }),
+];
+
+module.exports = {
+  getItemById,
+  displayForm,
+  insertItem,
+  updateItem,
+  displayDeleteForm,
+  deleteCategory,
+};
