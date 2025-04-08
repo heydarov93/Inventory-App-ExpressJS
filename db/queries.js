@@ -54,14 +54,15 @@ async function getCategoriesByItem(itemId) {
 // Get items by their id from db
 async function getItemById(itemId) {
   const { rows } = await pool.query(
-    `SELECT item_id, item_name, username, details, contact, added, status
+    `SELECT item_id, item_name, username, details, contact, added, status, secret_key
         FROM items 
     WHERE item_id = $1`,
     [itemId]
   );
 
   const categories = await getCategoriesByItem(itemId);
-  rows[0].categories = categories;
+
+  if (rows.length > 0) rows[0].categories = categories;
 
   return rows;
 }
@@ -181,6 +182,27 @@ async function updateItem(itemData) {
   );
 }
 
+async function categoryHasItems(categoryId) {
+  return await pool.query(
+    "SELECT EXISTS(SELECT 1 FROM item_categories WHERE category_id = $1)",
+    [categoryId]
+  );
+}
+
+async function deleteCategory(categoryId, secret_key) {
+  await pool.query(
+    "DELETE FROM categories WHERE category_id = $1 AND secret_key = $2",
+    [categoryId, secret_key]
+  );
+}
+
+async function deleteItem(itemId, secret_key) {
+  await pool.query("DELETE FROM items WHERE item_id = $1 AND secret_key = $2", [
+    itemId,
+    secret_key,
+  ]);
+}
+
 module.exports = {
   getItems,
   getCategories,
@@ -192,4 +214,7 @@ module.exports = {
   updateCategory,
   insertItem,
   updateItem,
+  deleteCategory,
+  deleteItem,
+  categoryHasItems,
 };
