@@ -2,7 +2,7 @@
 <% let action = "new" %>
 
 <!-- If category exists so it is the update form; Modify action to send put request -->
-<% if (category) { action = `${category.category_id}?_method=PUT`; } %>
+<% if (category) { action = `${category.category_id}/update`; } %>
 
 <form action="/categories/<%= action %>" method="POST">
   <% if (category) { %>

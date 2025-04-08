@@ -2,7 +2,7 @@
 <% let action = "new" %>
 
 <!-- If item exists so it is the update form; Modify action to send put request -->
-<% if (item) { action = `${item.item_id}?_method=PUT`; } %>
+<% if (item) { action = `${item.item_id}/update`; } %>
 
 <form action="/items/<%= action %>" method="POST">
 
