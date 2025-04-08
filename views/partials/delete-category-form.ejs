@@ -1,0 +1,13 @@
+<div>
+  <h3>Delete category <%= category.category_name %></h3>
+  <form action="/categories/<%= category.category_id %>/delete" method="post">
+    <div>
+      <label for="secret_key<%= category.category_id %>">Secret Key</label>
+      <div>
+        <input type="password" id="secret_key<%= category.category_id %>" name="secret_key" placeholder="Enter your secret key to confirm deletion" />
+      </div>
+      <%- include("input-error", {input_name: "secret_key"}) %>
+    </div>
+    <button type="submit">delete</button>
+  </form>
+</div>
