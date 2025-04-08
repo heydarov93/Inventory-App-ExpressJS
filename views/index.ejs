@@ -17,9 +17,7 @@
       <a href="/categories/<%= category.category_id %>"><%= category.category_name %></a>
       <div>
         <a href="/categories/<%= category.category_id %>/edit">edit</a>
-        <form action="/categories/<%= category.category_id %>/?_method=delete" method="post">
-          <button type="submit">delete</button>
-        </form>
+        <a href="/categories/<%= category.category_id %>/delete">delete</a>
       </div>
     </li>
     <br />
