@@ -11,9 +11,18 @@ const app = express();
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
-// Enable _method override (must come before routes)
-app.use(methodOverride("_method"));
+// Folder to retrieve static files from
+const assetsPath = path.join(__dirname, "public");
 
+// App level middlewares
+
+// Serve images, CSS files, and JavaScript files in a directory named public
+app.use(express.static(assetsPath));
+
+// Enable _method override (must come before routes)
+// app.use(methodOverride("_method"));
+
+// Allow express to use form data
 app.use(express.urlencoded({ extended: true }));
 
 // Register routers
