@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const db = require("../db/queries");
 const CustomNotFoundError = require("../error/CustomNotFoundError");
 const { body, validationResult, param } = require("express-validator");
+const { formatDate } = require("../utils/formatDate");
 
 const requiredMsg = "is required.";
 
@@ -12,10 +13,10 @@ const postFormValidation = [
     .withMessage(`Item name ${requiredMsg}`)
     .isLength({ min: 5, max: 30 })
     .withMessage("Item name must be between 5 and 30 characters."),
-  body("item_category")
+  body("categories")
     .isArray({ min: 1 })
     .withMessage(`You must choose at least 1 category.`),
-  body("item_category.*")
+  body("categories.*")
     .trim()
     .isInt()
     .withMessage("Category names are invalid."),
@@ -103,6 +104,8 @@ const getItemById = [
 
     const { item } = req;
 
+    item[0].added = formatDate(item[0].added);
+
     // First element of the item array is an item data
     res.render("item-details", {
       title: item[0].item_name,
@@ -131,6 +134,10 @@ const displayForm = [
       if (!errors.isEmpty())
         throw new CustomNotFoundError(errors.errors[0].msg);
 
+      // Multiselect input recieves only category ids to check selected categories
+      req.item[0].categories = req.item[0].categories.map(
+        (category) => category.category_id
+      );
       options.title = "Update item #" + itemId;
       options.heading_1 = "Update item #" + itemId;
       options.item = req.item[0];
