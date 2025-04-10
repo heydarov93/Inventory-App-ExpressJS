@@ -4,6 +4,7 @@ const path = require("node:path");
 const indexRouter = require("./routes/indexRouter");
 const categoryRouter = require("./routes/categoryRouter");
 const itemRouter = require("./routes/itemRouter");
+const CustomNotFoundError = require("./error/CustomNotFoundError");
 require("dotenv").config();
 
 const app = express();
@@ -29,6 +30,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/", indexRouter);
 app.use("/categories", categoryRouter);
 app.use("/items", itemRouter);
+app.get("*", () => {
+  throw new CustomNotFoundError("Page Not Found!");
+});
 
 // Register error middleware
 app.use((error, req, res, next) => {
