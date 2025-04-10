@@ -97,7 +97,7 @@ async function updateCategory(categoryData) {
 async function insertItem(itemData) {
   const {
     item_name,
-    item_category,
+    categories,
     username,
     contact,
     status,
@@ -128,7 +128,7 @@ async function insertItem(itemData) {
       status,
       details,
       confirm_secret_key,
-      item_category,
+      categories,
     ]
   );
 }
@@ -138,7 +138,7 @@ async function updateItem(itemData) {
   const {
     item_id,
     item_name,
-    item_category,
+    categories,
     username,
     contact,
     status,
@@ -177,7 +177,7 @@ async function updateItem(itemData) {
       secret_key || confirm_secret_key, // if user doesn't change secret key so it should stay same as previous one
       item_id,
       confirm_secret_key,
-      item_category,
+      categories,
     ]
   );
 }
