@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const db = require("../db/queries");
 const CustomNotFoundError = require("../error/CustomNotFoundError");
 const { body, validationResult, param } = require("express-validator");
+const { formatDate } = require("../utils/formatDate");
 
 const postFormValidation = [
   body("category_name")
@@ -87,6 +88,7 @@ const getItemsByCategory = [
       title: items[0].category_name,
       heading_1: `All items for ${items[0].category_name} category`,
       items,
+      formatDate,
     });
   }),
 ];
