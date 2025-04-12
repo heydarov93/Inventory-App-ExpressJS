@@ -4,10 +4,16 @@
   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 <% } %>
-<header class="border-bottom p-3 mb-3">
-  <nav>
-    <ul class="list-unstyled list-group list-group-horizontal">
-      <% [
+<header class="mb-3">
+  <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">WhereIsIt?</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <% [
         {
             menu: "Home",
             link: "/"
@@ -21,8 +27,13 @@
             link: "/items/new"
         }
         ].forEach(({menu, link}) => { %>
-      <li class="me-1"><a class="link-offset-2 link-underline text-decoration-none link-dark p-2" href="<%=link%>"><%= menu %></a></li>
-      <% }) %>
-    </ul>
+
+          <li class="nav-item">
+            <a class="nav-link <%= locals.currentPath === link ? 'active' : '' %>" aria-current="page" href="<%=link%>"><%= menu %></a>
+          </li>
+          <% }) %>
+        </ul>
+      </div>
+    </div>
   </nav>
 </header>
