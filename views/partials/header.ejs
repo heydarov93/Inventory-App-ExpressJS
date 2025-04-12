@@ -1,0 +1,28 @@
+<% if (locals.notification) { %>
+<div class="alert alert-<%= locals.status === 'success' ? 'success' : 'danger' %> alert-dismissible text-center fade show" role="alert">
+  <%=  locals.notification %>
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+<% } %>
+<header class="border-bottom p-3 mb-3">
+  <nav>
+    <ul class="list-unstyled list-group list-group-horizontal">
+      <% [
+        {
+            menu: "Home",
+            link: "/"
+        },
+        {
+            menu: "Add category",
+            link: "/categories/new"
+        },
+        {
+            menu: "Add item",
+            link: "/items/new"
+        }
+        ].forEach(({menu, link}) => { %>
+      <li class="me-1"><a class="link-offset-2 link-underline text-decoration-none link-dark p-2" href="<%=link%>"><%= menu %></a></li>
+      <% }) %>
+    </ul>
+  </nav>
+</header>
