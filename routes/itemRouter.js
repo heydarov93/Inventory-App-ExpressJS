@@ -25,6 +25,6 @@ router.post("/new", itemController.insertItem);
 router.post("/:itemId/update", itemController.updateItem);
 
 // Delete an item
-router.post("/:itemId/delete", itemController.deleteCategory);
+router.post("/:itemId/delete", itemController.deleteItem);
 
 module.exports = router;
