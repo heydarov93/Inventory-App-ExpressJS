@@ -6,6 +6,7 @@ const categoryRouter = require("./routes/categoryRouter");
 const itemRouter = require("./routes/itemRouter");
 const CustomNotFoundError = require("./error/CustomNotFoundError");
 const setNotificationMessage = require("./middlewares/setNotificationMessage");
+const setCurrentPath = require("./middlewares/setCurrentPath");
 require("dotenv").config();
 
 const app = express();
@@ -29,6 +30,9 @@ app.use(express.urlencoded({ extended: true }));
 
 // Set notification message for all requests/pages
 app.use(setNotificationMessage);
+
+// Set active path for all requests
+app.use(setCurrentPath);
 
 // Register routers
 app.use("/", indexRouter);
