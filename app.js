@@ -5,6 +5,7 @@ const indexRouter = require("./routes/indexRouter");
 const categoryRouter = require("./routes/categoryRouter");
 const itemRouter = require("./routes/itemRouter");
 const CustomNotFoundError = require("./error/CustomNotFoundError");
+const setNotificationMessage = require("./middlewares/setNotificationMessage");
 require("dotenv").config();
 
 const app = express();
@@ -15,7 +16,7 @@ app.set("view engine", "ejs");
 // Folder to retrieve static files from
 const assetsPath = path.join(__dirname, "public");
 
-// App level middlewares
+/* App level middlewares */
 
 // Serve images, CSS files, and JavaScript files in a directory named public
 app.use(express.static(assetsPath));
@@ -26,13 +27,20 @@ app.use(express.static(assetsPath));
 // Allow express to use form data
 app.use(express.urlencoded({ extended: true }));
 
+// Set notification message for all requests/pages
+app.use(setNotificationMessage);
+
 // Register routers
 app.use("/", indexRouter);
 app.use("/categories", categoryRouter);
 app.use("/items", itemRouter);
-app.get("*", () => {
-  throw new CustomNotFoundError("Page Not Found!");
-});
+
+// If route not found
+app.get("*", (req, res) =>
+  res
+    .status(404)
+    .render("error", { statusCode: 404, message: "Page Not found!" })
+);
 
 // Register error middleware
 app.use((error, req, res, next) => {
