@@ -48,8 +48,7 @@ const postFormValidation = [
     .optional({ values: "falsy" })
     .trim()
     .isLength({ max: 2000 })
-    .withMessage("Details must be a maximum of 2000 characters.")
-    .escape(),
+    .withMessage("Details must be a maximum of 2000 characters."),
   body("confirm_secret_key")
     .trim()
     .notEmpty()
@@ -83,16 +82,16 @@ const paramsValidation = [
     .withMessage("Item not found."),
 ];
 
-const deleteItemValidation = [
-  ...paramsValidation,
-  body("secret_key")
-    .custom(async (secret_key, { req }) => {
-      if (req.item[0].secret_key !== secret_key) throw new Error();
+// const deleteItemValidation = [
+//   ...paramsValidation,
+//   body("secret_key")
+//     .custom(async (secret_key, { req }) => {
+//       if (req.item[0].secret_key !== secret_key) throw new Error();
 
-      return true;
-    })
-    .withMessage("Invalid secret key."),
-];
+//       return true;
+//     })
+//     .withMessage("Invalid secret key."),
+// ];
 
 const getItemById = [
   paramsValidation,
@@ -169,9 +168,14 @@ const insertItem = [
       return;
     }
 
-    await db.insertItem(req.body);
+    const rowCount = await db.insertItem(req.body);
 
-    res.redirect("/");
+    if (rowCount < 1) {
+      res.redirect("/items/new?status=fail");
+      return;
+    }
+
+    res.redirect("/?status=success");
   }),
 ];
 
@@ -198,12 +202,14 @@ const updateItem = [
       return;
     }
 
-    // If secret key is empty (not edited) keep it same as previous
-    req.body.secret_key = req.body.secret_key || req.bodyconfirm_secret_key;
+    const rowCount = await db.updateItem(req.body);
 
-    await db.updateItem(req.body);
+    if (rowCount < 1) {
+      res.redirect("/items/" + item_id + "/edit?status=fail");
+      return;
+    }
 
-    res.redirect("/items/" + item_id);
+    res.redirect("/items/" + item_id + "?status=success");
   }),
 ];
 
@@ -220,26 +226,18 @@ const displayDeleteForm = [
   }),
 ];
 
-const deleteCategory = [
-  deleteItemValidation,
-  asyncHandler(async (req, res) => {
-    const { itemId } = req.params;
+const deleteItem = asyncHandler(async (req, res) => {
+  const { itemId } = req.params;
 
-    const errors = validationResult(req);
+  const rowCount = await db.deleteItem(itemId, req.body.secret_key);
 
-    if (!errors.isEmpty()) {
-      // render form with error message (400 bad request)
-      res.status(403).render("delete-form", {
-        item: req.item[0],
-        errors: errors.errors,
-      });
-      return;
-    }
+  if (rowCount < 1) {
+    res.redirect(`/items/${itemId}/delete?status=fail`);
+    return;
+  }
 
-    await db.deleteItem(itemId, req.item[0].secret_key);
-    res.redirect("/");
-  }),
-];
+  res.redirect("/?status=success");
+});
 
 module.exports = {
   getItemById,
@@ -247,5 +245,5 @@ module.exports = {
   insertItem,
   updateItem,
   displayDeleteForm,
-  deleteCategory,
+  deleteItem,
 };

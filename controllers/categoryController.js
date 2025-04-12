@@ -36,7 +36,9 @@ const paramsValidation = [
       if (!category || category.length === 0) throw new Error();
 
       if (
-        req.originalUrl.match(/^\/categories\/[^/]+\/(edit|delete)$/) &&
+        req.originalUrl.match(
+          /^\/categories\/[^/]+\/(edit|delete)(?:\?.*)?$/
+        ) &&
         req.method === "GET"
       )
         req.category = category;
@@ -46,26 +48,26 @@ const paramsValidation = [
     .withMessage("Category not found."),
 ];
 
-const deleteCategoryValidation = [
-  param("categoryId")
-    .custom(async (id, { req }) => {
-      const category = await db.getCategoryById(id);
+// const deleteCategoryValidation = [
+//   param("categoryId")
+//     .custom(async (id, { req }) => {
+//       const category = await db.getCategoryById(id);
 
-      if (!category || category.length === 0) throw new Error();
+//       if (!category || category.length === 0) throw new Error();
 
-      req.category = category;
+//       req.category = category;
 
-      return true;
-    })
-    .withMessage("Category not found."),
-  body("secret_key")
-    .custom(async (secret_key, { req }) => {
-      if (req.category[0].secret_key !== secret_key) throw new Error();
+//       return true;
+//     })
+//     .withMessage("Category not found."),
+//   body("secret_key")
+//     .custom(async (secret_key, { req }) => {
+//       if (req.category[0].secret_key !== secret_key) throw new Error();
 
-      return true;
-    })
-    .withMessage("Invalid secret key."),
-];
+//       return true;
+//     })
+//     .withMessage("Invalid secret key."),
+// ];
 
 // Get all items of a category and render them
 const getItemsByCategory = [
@@ -98,6 +100,7 @@ const displayForm = [
   paramsValidation,
   asyncHandler(async (req, res) => {
     const { categoryId } = req.params;
+
     const options = {
       isItemForm: false,
       category: null,
@@ -145,9 +148,13 @@ const insertCategory = [
 
     const { category_name, confirm_secret_key: secret_key } = req.body;
 
-    await db.insertCategory({ category_name, secret_key });
+    const rowCount = await db.insertCategory({ category_name, secret_key });
 
-    res.redirect("/");
+    if (rowCount < 1) {
+      res.redirect("/categories/new?status=fail");
+    }
+
+    res.redirect("/?status=success");
   }),
 ];
 
@@ -158,36 +165,42 @@ const updateCategory = [
     const { category_id, category_name, secret_key, confirm_secret_key } =
       req.body;
 
+    const options = {
+      isItemForm: false,
+      category: {
+        category_id,
+        category_name,
+        secret_key,
+        confirm_secret_key,
+      },
+      title: "Update category #" + category_id,
+      heading_1: "Update category #" + category_id,
+    };
+
     const errors = validationResult(req);
 
     // If there is any error
     if (!errors.isEmpty()) {
-      const options = {
-        isItemForm: false,
-        category: {
-          category_id,
-          category_name,
-          secret_key,
-          confirm_secret_key,
-        },
-        title: "Update category #" + category_id,
-        heading_1: "Update category #" + category_id,
-        errors: errors.errors,
-      };
-
+      options.errors = errors.errors;
       // Render same form with errors and related options
       res.status(400).render("form", options);
       return;
     }
 
-    await db.updateCategory({
+    const rowCount = await db.updateCategory({
       category_id,
       category_name,
-      secret_key: secret_key || confirm_secret_key, // if user doesn't change secret key so it should stay same as previous one
+      secret_key,
       confirm_secret_key,
     });
 
-    res.redirect(`/categories/${category_id}/edit`);
+    if (rowCount < 1) {
+      // Render same form with notification message
+      res.redirect(`/categories/${category_id}/edit?status=fail`);
+      return;
+    }
+
+    res.redirect(`/categories/${category_id}/edit?status=success`);
   }),
 ];
 
@@ -204,37 +217,29 @@ const displayDeleteForm = [
   }),
 ];
 
-const deleteCategory = [
-  deleteCategoryValidation,
-  asyncHandler(async (req, res) => {
-    const { categoryId } = req.params;
+const deleteCategory = asyncHandler(async (req, res) => {
+  const { categoryId } = req.params;
 
-    const errors = validationResult(req);
+  const { rows } = await db.categoryHasItems(categoryId);
+  const hasItems = rows[0].exists;
 
-    if (!errors.isEmpty()) {
-      // render form with error message (400 bad request)
-      res.status(403).render("delete-form", {
-        category: req.category[0],
-        errors: errors.errors,
-      });
-      return;
-    }
+  // If category has items don't allow to delete it
+  if (hasItems) {
+    return res.status(409).render("error", {
+      message: "Category has associated items. Remove them first.",
+      statusCode: 409,
+    });
+  }
 
-    const { rows } = await db.categoryHasItems(categoryId);
-    const hasItems = rows[0].exists;
+  const rowCount = await db.deleteCategory(categoryId, req.body.secret_key);
 
-    // If category has items don't allow to delete it
-    if (hasItems) {
-      return res.status(409).render("error", {
-        message: "Category has associated items. Remove them first.",
-        statusCode: 409,
-      });
-    }
+  if (rowCount < 1) {
+    res.redirect(`/categories/${categoryId}/delete?status=fail`);
+    return;
+  }
 
-    await db.deleteCategory(categoryId, req.category[0].secret_key);
-    res.redirect("/");
-  }),
-];
+  res.redirect("/?status=success");
+});
 
 module.exports = {
   getItemsByCategory,
