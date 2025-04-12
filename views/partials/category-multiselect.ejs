@@ -1,9 +1,9 @@
 <div>
-  <select id="item_category" name="item_category[]" multiple style="width: 200px; height: 100px;">
+  <select id="categories" name="categories[]" class="form-select" data-mdb-select-init multiple data-mdb-clear-button="true">
     <% categories.forEach(category => { %>
 
     <!-- Check if category is selected or not -->
-    <% const isSelected = item?.categories?.some(c => c.category_id ===
+    <% const isSelected = item?.categories?.some(cId => Number(cId) ===
     category.category_id) %>
     <option value="<%= category.category_id %>" <%= isSelected ? 'selected' : '' %>>
       <%= category.category_name %>
@@ -11,7 +11,7 @@
     <% }) %>
     <!-- Close forEach -->
   </select>
-  <p style="margin-top: 0;">
+  <p class="m-0 text-info">
     Hold down the Ctrl (windows) / Command (Mac) button to select multiple options.
   </p>
 </div>

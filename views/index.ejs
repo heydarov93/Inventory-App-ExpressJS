@@ -1,29 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
+<%- include("partials/head-tag") %>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%= title %></title>
-</head>
-
-<body>
-  <%- include("partials/navbar") %>
-  <hr>
-  <h1><%= heading_1 %></h1>
-  <ul>
-    <% categories.forEach((category) => { %>
-    <li>
-      <a href="/categories/<%= category.category_id %>"><%= category.category_name %></a>
-      <div>
-        <a href="/categories/<%= category.category_id %>/edit">edit</a>
-        <a href="/categories/<%= category.category_id %>/delete">delete</a>
-      </div>
-    </li>
-    <br />
-    <br />
-    <% }) %>
-  </ul>
-</body>
-
-</html>
+<body class="">
+  <%- include("partials/header") %>
+  <div class="container-fluid">
+    <div class="text-center">
+      <h1 class="display-1">WhereIsIt?</h1>
+      <p class="lead">Lost & Found, Simplified</p>
+    </div>
+  </div>
+  <div class="container">
+    <h2><%= heading_1 %></h2>
+    <ul class="list-unstyled">
+      <% categories.forEach((category) => { %>
+      <li class="d-flex flex-md-row flex-column justify-content-between border-bottom border-3 p-3">
+        <a class="link-offset-2 text-decoration-none link-dark fs-5" href="/categories/<%= category.category_id %>"><%= category.category_name %></a>
+        <div class="btn-group">
+          <a class="btn btn-outline-secondary" href="/categories/<%= category.category_id %>">See items</a>
+          <a class="btn btn-outline-secondary" href="/categories/<%= category.category_id %>/edit">Edit</a>
+          <a class="btn btn-outline-secondary" href="/categories/<%= category.category_id %>/delete">Delete</a>
+        </div>
+      </li>
+      <br />
+      <br />
+      <% }) %>
+    </ul>
+  </div>
+  <%- include("partials/footer") %>

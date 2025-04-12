@@ -1,21 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%= title %></title>
-</head>
+<%- include("partials/head-tag") %>
 
 <body>
-  <%- include("partials/navbar") %>
-  <hr>
-  <h1><%= heading_1 %></h1>
-  <!-- If form is for items so display item form -->
-  <% if (isItemForm) { %> <%- include("partials/item-form", { item }) %>
+  <%- include("partials/header") %>
+  <div class="container pb-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-6">
+        <h1 class="mb-5"><%= heading_1 %></h1>
+        <!-- If form is for items so display item form -->
+        <% if (isItemForm) { %> <%- include("partials/item-form", { item }) %>
 
-  <!-- If form is for categories so display category form -->
-  <% } else { %> <%- include("partials/category-form", { category }) %> <% } %>
-</body>
-
-</html>
+        <!-- If form is for categories so display category form -->
+        <% } else { %> <%- include("partials/category-form", { category }) %> <% } %>
+      </div>
+    </div>
+  </div>
+  <%- include("partials/footer") %>

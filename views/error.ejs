@@ -1,16 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%= message %></title>
-</head>
+<%- include("partials/head-tag") %>
 
 <body>
-  <%- include("partials/navbar") %>
-  <hr>
-  <h1>🙈 <%= `${statusCode}: ${message}` %></h1>
-</body>
+  <%- include("partials/header") %>
 
-</html>
+  <h1 class="ms-3">🙈 <%= `${statusCode}: ${message}` %></h1>
+  <%- include("partials/footer") %>

@@ -1,13 +1,18 @@
-<div>
-  <h3>Delete item <%= item.item_name %></h3>
-  <form action="/items/<%= item.item_id %>/delete" method="post">
-    <div>
-      <label for="secret_key<%= item.item_id %>">Secret Key</label>
-      <div>
-        <input type="password" id="secret_key<%= item.item_id %>" name="secret_key" placeholder="Enter your secret key to confirm deletion" />
-      </div>
-      <%- include("input-error", {input_name: "secret_key"}) %>
+<div class="container pb-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-6">
+      <h1 class="mb-5">Delete item <%= item.item_name %></h1>
+
+      <form action="/items/<%= item.item_id %>/delete" method="post" class="d-flex gap-3 flex-column shadow-sm p-5 rounded">
+        <div>
+          <label for="secret_key<%= item.item_id %>" class="form-label">Secret Key</label>
+          <div>
+            <input type="password" id="secret_key<%= item.item_id %>" class="form-control" name="secret_key" placeholder="Enter your secret key to confirm deletion" />
+          </div>
+          <%- include("input-error", {input_name: "secret_key"}) %>
+        </div>
+        <button type="submit" class="btn btn-danger">delete</button>
+      </form>
     </div>
-    <button type="submit">delete</button>
-  </form>
+  </div>
 </div>

@@ -1,36 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%= title %></title>
-</head>
+<%- include("partials/head-tag") %>
 
 <body>
-  <%- include("partials/navbar") %>
-  <hr>
-  <h1><%= heading_1 %></h1>
-  <ul>
-    <% items.forEach((item) => { %> <% const status = item.status ? "Found" :
+  <%- include("partials/header") %>
+  <div class="container">
+    <h1 class="mb-5"><%= heading_1 %></h1>
+    <div class="row g-3">
+      <% items.forEach((item) => { %> <% const status = item.status ? "Found" :
       "Lost" %>
-    <li>
-      Name: <%= item.item_name %><br />
-      Author: <%= item.username %><br />
-      Tel: <%= item.contact %><br />
-      Status: <%= status %><br />
-      Date: <%= item.added %><br />
-      Description: <%= item.details %><br />
-      <a href="/items/<%= item.item_id %>">Open</a>
-      <div>
-        <a href="/items/<%= item.item_id %>/edit">edit</a>
-        <a href="/items/<%= item.item_id %>/delete">delete</a>
+      <% const cardBg = item.status ? "bg-success-subtle" : "bg-danger-subtle" %>
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="rounded p-3 shadow-sm <%= cardBg %>">
+          <span class="d-block"><strong>Name:</strong> <%= item.item_name %></span>
+          <span class="d-block"><strong>Author:</strong> <%= item.username %></span>
+          <span class="d-block"><strong>Tel:</strong> <%= item.contact %></span>
+          <span class="d-block"><strong>Status:</strong> <%= status %></span>
+          <span class="d-block"><strong>Date:</strong> <%= formatDate(item.added) %></span>
+          <span class="d-block"><strong>Description:</strong> <%= item.details.slice(0, 25) %>...</span>
+          <div class="btn-group w-100 mt-3 bg-white">
+            <a class="btn btn-outline-primary" href="/items/<%= item.item_id %>">Open</a>
+            <a class="btn btn-outline-primary" href="/items/<%= item.item_id %>/edit">edit</a>
+            <a class="btn btn-outline-primary" href="/items/<%= item.item_id %>/delete">delete</a>
+          </div>
+        </div>
       </div>
-      <br />
-      <br />
-    </li>
-    <% }) %>
-  </ul>
-</body>
-
-</html>
+      <% }) %>
+    </div>
+    <%- include("partials/footer") %>
