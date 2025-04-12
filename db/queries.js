@@ -1,4 +1,7 @@
 const pool = require("./pool");
+require("dotenv").config();
+
+const ADMIN_KEY = process.env.ADMIN_KEY;
 
 // Retrieve all items from db
 async function getItems() {
@@ -71,26 +74,46 @@ async function getItemById(itemId) {
 async function insertCategory(categoryData) {
   const { category_name, secret_key } = categoryData;
 
-  await pool.query(
+  const result = await pool.query(
     "INSERT INTO categories (category_name, secret_key) VALUES ($1, $2)",
     [category_name, secret_key]
   );
+
+  return result.rowCount;
 }
 
 // Update a category
 async function updateCategory(categoryData) {
   const { category_id, category_name, secret_key, confirm_secret_key } =
     categoryData;
+  const setClauses = [];
 
-  await pool.query(
-    "UPDATE categories SET category_name = $1, secret_key = $2 WHERE category_id = $3 AND secret_key = $4",
-    [
-      category_name,
-      secret_key || confirm_secret_key, // if user doesn't change secret key so it should stay same as previous one
-      category_id,
-      confirm_secret_key,
-    ]
-  );
+  const params = [category_name, category_id];
+
+  // User modifies secret key (enters a new one)
+  if (secret_key && secret_key.trim !== "") {
+    setClauses.push(", secret_key = $3");
+    params.push(secret_key);
+  }
+
+  // Admin override (bypass secret key check)
+  let sql = `UPDATE categories SET category_name = $1${setClauses.join(
+    ", "
+  )} WHERE category_id = $2`;
+
+  // Regular user update (requires correct confirm_secret_key)
+  if (confirm_secret_key !== ADMIN_KEY) {
+    params.push(confirm_secret_key);
+
+    sql = `UPDATE categories SET category_name = $1${setClauses.join(
+      ", "
+    )} WHERE category_id = $2 AND secret_key = $${params.length}`; // Params length is the position of confirm_secret_key
+  }
+
+  // Query database
+  const result = await pool.query(sql, params);
+
+  return result.rowCount;
 }
 
 // Insert an item
@@ -105,7 +128,7 @@ async function insertItem(itemData) {
     confirm_secret_key,
   } = itemData;
 
-  await pool.query(
+  const result = await pool.query(
     `WITH inserted_item AS (
       INSERT INTO items (
         item_name,
@@ -131,6 +154,8 @@ async function insertItem(itemData) {
       categories,
     ]
   );
+
+  return result.rowCount;
 }
 
 // Update an item
@@ -147,39 +172,73 @@ async function updateItem(itemData) {
     confirm_secret_key,
   } = itemData;
 
-  await pool.query(
-    `WITH updated_item AS (
-      UPDATE items SET
+  const setClauses = [];
+
+  const params = [
+    item_name,
+    username,
+    contact,
+    status,
+    details,
+    item_id,
+    categories,
+  ];
+
+  // User modifies secret key (enters a new one)
+  if (secret_key && secret_key.trim !== "") {
+    params.push(secret_key);
+    setClauses.push(`, secret_key = $${params.length}`);
+  }
+
+  // Admin override (bypass secret key check)
+  let updateItemSql = `UPDATE items SET
         item_name = $1,
         username = $2,
         contact = $3,
         status = $4,
-        details = $5,
-        secret_key = $6
-      WHERE item_id = $7 AND secret_key = $8
-      RETURNING item_id
-    ),
+        details = $5
+        ${setClauses.join(", ")}
+      WHERE item_id = $6
+      RETURNING item_id`;
+
+  // Regular user update (requires correct confirm_secret_key)
+  if (confirm_secret_key !== ADMIN_KEY) {
+    params.push(confirm_secret_key);
+
+    updateItemSql = `UPDATE items SET
+        item_name = $1,
+        username = $2,
+        contact = $3,
+        status = $4,
+        details = $5
+        ${setClauses.join(", ")}
+      WHERE item_id = $6 AND secret_key = $${params.length}
+      RETURNING item_id`; // Params length is the position of confirm_secret_key
+  }
+
+  const result = await pool.query(
+    `WITH updated_item AS (${updateItemSql}),
     deleted_categories AS (
       DELETE FROM item_categories
-      WHERE item_id = $7
-      AND category_id NOT IN (SELECT UNNEST($9::int[]))
-      )
-    INSERT INTO item_categories (item_id, category_id)
-    SELECT updated_item.item_id, UNNEST($9::int[])
+      WHERE item_id = $6
+      AND category_id NOT IN (SELECT UNNEST($7::int[]))
+      RETURNING 1
+      ),
+    inserted_categories AS (INSERT INTO item_categories (item_id, category_id)
+    SELECT updated_item.item_id, UNNEST($7::int[])
     FROM updated_item
-    ON CONFLICT (item_id, category_id) DO NOTHING`,
-    [
-      item_name,
-      username,
-      contact,
-      status,
-      details,
-      secret_key || confirm_secret_key, // if user doesn't change secret key so it should stay same as previous one
-      item_id,
-      confirm_secret_key,
-      categories,
-    ]
+    ON CONFLICT (item_id, category_id) DO NOTHING
+    RETURNING 1
+    )
+    SELECT 
+     (SELECT COUNT(*) FROM updated_item) AS item_updated,
+     (SELECT COUNT(*) FROM deleted_categories) AS categories_deleted,
+     (SELECT COUNT(*) FROM inserted_categories) AS categories_added`,
+    params
   );
+  const { item_updated, categories_deleted, categories_added } = result.rows[0];
+
+  return +item_updated + +categories_deleted + +categories_added;
 }
 
 async function categoryHasItems(categoryId) {
@@ -190,17 +249,38 @@ async function categoryHasItems(categoryId) {
 }
 
 async function deleteCategory(categoryId, secret_key) {
-  await pool.query(
-    "DELETE FROM categories WHERE category_id = $1 AND secret_key = $2",
-    [categoryId, secret_key]
-  );
+  // Regular user update (requires correct confirm_secret_key)
+  if (secret_key !== ADMIN_KEY) {
+    return (
+      await pool.query(
+        "DELETE FROM categories WHERE category_id = $1 AND secret_key = $2",
+        [categoryId, secret_key]
+      )
+    ).rowCount;
+  }
+
+  // Admin updates (bypass secret key check)
+  return (
+    await pool.query("DELETE FROM categories WHERE category_id = $1", [
+      categoryId,
+    ])
+  ).rowCount;
 }
 
 async function deleteItem(itemId, secret_key) {
-  await pool.query("DELETE FROM items WHERE item_id = $1 AND secret_key = $2", [
-    itemId,
-    secret_key,
-  ]);
+  // Regular user update (requires correct confirm_secret_key)
+  if (secret_key !== ADMIN_KEY) {
+    return (
+      await pool.query(
+        "DELETE FROM items WHERE item_id = $1 AND secret_key = $2",
+        [itemId, secret_key]
+      )
+    ).rowCount;
+  }
+
+  // Admin updates (bypass secret key check)
+  return (await pool.query("DELETE FROM items WHERE item_id = $1", [itemId]))
+    .rowCount;
 }
 
 module.exports = {
