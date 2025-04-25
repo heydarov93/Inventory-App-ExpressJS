@@ -48,9 +48,9 @@ VALUES
 
 INSERT INTO items(item_name, username, details, contact, status, secret_key )
 VALUES
-    ('Ring', 'baklick', 'I found this item at the bus station.', '+12834567890', 1, '${ADMIN_KEY}'),
-    ('Dell laptop', 'baklick', 'I lost my laptop at the cafe.', '+12834567890', 0, '${ADMIN_KEY}'),
-    ('100 USD', 'baklick', 'I found $100 at the school.', '+12834567890', 1, '${ADMIN_KEY}');
+    ('Ring', 'baklick', 'I found this item at the bus station.', '+994550000000', 1, '${ADMIN_KEY}'),
+    ('Dell laptop', 'baklick', 'I lost my laptop at the cafe.', '+994550000000', 0, '${ADMIN_KEY}'),
+    ('100 USD', 'baklick', 'I found $100 at the school.', '+994550000000', 1, '${ADMIN_KEY}');
 
 INSERT INTO item_categories(item_id, category_id)
 VALUES
