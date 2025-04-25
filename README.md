@@ -4,6 +4,10 @@
 
 <br>
 
+🔴 **Live**: [inventory-app-expressjs-production.up.railway.app](https://inventory-app-expressjs-production.up.railway.app/)
+
+<br>
+
 ## 📃 Overview
 **WhereItIs?** is a web application for managing lost and found items in a community. Users can create, update, and delete categories (e.g., electronics, clothing) and items (e.g., lost phone, found wallet) using forms. Each category and item has a secret key, so only the owner can change or remove it. An admin can manage everything with a special admin key. This project was developed following the instructions from The Odin Project. [Link to instructions](https://www.theodinproject.com/lessons/node-path-nodejs-inventory-application)
 
