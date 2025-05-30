@@ -6,6 +6,9 @@
 
 🔴 **Live**: [inventory-app-expressjs-production.up.railway.app](https://inventory-app-expressjs-production.up.railway.app/)
 
+> [!WARNING] 
+> The live demo may experience downtime as it is hosted on a free service. For guaranteed access, please [run locally](#-installation-and-setup) using the instructions below.
+
 <br>
 
 ## 📃 Overview
